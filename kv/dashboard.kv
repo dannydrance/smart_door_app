@@ -1,0 +1,164 @@
+<DashboardScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 0.12, 0.15, 0.2, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # ================= HEADER BAR =================
+        BoxLayout:
+            size_hint_y: None
+            height: 60
+            padding: [15, 10]
+            spacing: 10
+            canvas.before:
+                Color:
+                    rgba: 0.18, 0.22, 0.28, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                text: "Smart Door Control"
+                font_size: 26
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+            Widget:
+
+            Button:
+                id: profile_btn
+                text: "Menu ▾"
+                font_size: 16
+                size_hint_x: None
+                width: 150
+                background_normal: ''
+                background_color: 0.25, 0.5, 0.9, 1
+                color: 1, 1, 1, 1
+                bold: True
+                on_release: root.open_menu(self)
+
+        # ================= MAIN CONTENT =================
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [20, 15]
+            spacing: 15
+
+            # ---- STATUS BAR ----
+            BoxLayout:
+                size_hint_y: None
+                height: 40
+                spacing: 10
+
+                Label:
+                    id: connection_label
+                    text: "MQTT: " + root.connection_status
+                    color: (0, 1, 0, 1) if root.connection_status == "Online" else (1, 0.3, 0.3, 1)
+                    font_size: 16
+                    bold: True
+
+                Label:
+                    id: status_label
+                    text: "Device Offline"
+                    color: (0, 1, 0, 1) if root.connection_status == "Device Online" else (1, 0.3, 0.3, 1)
+                    font_size: 16
+                    bold: True
+
+                Label:
+                    id: wifi_label
+                    text: "Signal: -- dBm"
+                    color: 0.8, 0.8, 0.8, 1
+                    font_size: 14
+
+            # ---- DOOR + CONTROL BAR ----
+            BoxLayout:
+                size_hint_y: None
+                height: 60
+                spacing: 15
+
+                Button:
+                    text: "UNLOCK"
+                    background_normal: ''
+                    background_color: 0.2, 0.8, 0.4, 1
+                    color: 1, 1, 1, 1
+                    font_size: 18
+                    bold: True
+                    on_release: root.send_command("UNLOCK")
+
+                Button:
+                    text: "LOCK"
+                    background_normal: ''
+                    background_color: 0.9, 0.2, 0.2, 1
+                    color: 1, 1, 1, 1
+                    font_size: 18
+                    bold: True
+                    on_release: root.send_command("LOCK")
+
+                Button:
+                    text: "Manage"
+                    background_normal: ''
+                    background_color: 0.2, 0.6, 0.9, 1
+                    color: 1, 1, 1, 1
+                    font_size: 18
+                    bold: True
+                    on_release: app.root.current = "manage"
+
+            #----- NOTIFICATIONS SECTION ----
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 5
+                size_hint_y: 0.5   # occupies half of remaining height
+                padding: [0, 5, 0, 10]
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: 40
+                    spacing: 10
+
+                    Label:
+                        text: "Notifications"
+                        font_size: 18
+                        bold: True
+                        color: 1, 1, 1, 1
+                        size_hint_y: None
+                        height: 30
+                        halign: 'left'
+                        valign: 'middle'
+                        text_size: self.size
+                        size_hint_x: 0.5   # <-- takes 50% of width
+
+                    AnchorLayout:
+                        size_hint_x: 0.5
+                        anchor_x: 'right'
+                        anchor_y: 'center'
+
+                        Button:
+                            text: "Clear Notifications"
+                            size_hint: None, None
+                            size: 160, 35
+                            background_normal: ''
+                            background_color: 0.5, 0.2, 0.2, 1
+                            color: 1, 1, 1, 1
+                            font_size: 14
+                            bold: True
+                            on_release: root.clear_notifications()
+
+                ScrollView:
+                    id: notification_scroll
+                    do_scroll_x: False
+                    bar_width: 8
+
+                    BoxLayout:
+                        id: notification_list
+                        orientation: "vertical"
+                        size_hint_y: None
+                        height: self.minimum_height
+                        spacing: 8
+                        padding: [5, 5]

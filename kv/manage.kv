@@ -1,0 +1,167 @@
+<ManageScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 0.12, 0.15, 0.2, 1
+            Rectangle:
+                group: 'background'
+                pos: self.pos
+                size: self.size
+
+        # ============ HEADER BAR ============
+        BoxLayout:
+            size_hint_y: None
+            height: 60
+            padding: [15, 10]
+            spacing: 10
+            canvas.before:
+                Color:
+                    rgba: 0.18, 0.22, 0.28, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                text: "Manage Access"
+                font_size: 26
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+            Widget:
+
+            Button:
+                id: menu_btn
+                text: "Menu ▾"
+                font_size: 16
+                size_hint_x: None
+                width: 150
+                background_normal: ''
+                background_color: 0.25, 0.5, 0.9, 1
+                color: 1, 1, 1, 1
+                bold: True
+                on_release: root.open_menu(self)
+
+        # ============ MAIN CONTENT ============
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [20, 15]
+            spacing: 15
+
+            Label:
+                id: feedback
+                text: ""
+                font_size: 16
+                color: 0.8, 0.8, 1, 1
+                size_hint_y: None
+                height: 30
+                text_size: self.size
+                halign: "left"
+                valign: "middle"
+
+            # Add new card section
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                spacing: 10
+
+                TextInput:
+                    id: card_uid
+                    hint_text: "Enter new card UID"
+                    multiline: False
+                    background_color: 1,1,1,0.1
+                    foreground_color: 1,1,1,1
+                    padding: [15,15]
+                    font_size: 16
+                    #canvas.before:
+                       # Color:
+                           # rgba: 0.3,0.3,0.35,1
+                        #RoundedRectangle:
+                          #  pos: self.pos
+                           # size: self.size
+                           # radius: [10]
+
+                Button:
+                    text: "Add"
+                    background_normal: ''
+                    background_color: 0.2, 0.8, 0.4, 1
+                    color: 1, 1, 1, 1
+                    bold: True
+                    on_release: root.add_card()
+
+            # Change PIN section
+            BoxLayout:
+                size_hint_y: None
+                height: 50
+                spacing: 10
+
+                TextInput:
+                    id: new_pin
+                    hint_text: "Enter new PIN"
+                    password: True
+                    multiline: False
+                    background_color: 1,1,1,0.1
+                    foreground_color: 1,1,1,1
+                    padding: [15,15]
+                    font_size: 16
+                    #canvas.before:
+                        #Color:
+                            #rgba: 0.3,0.3,0.35,1
+                        #RoundedRectangle:
+                            #pos: self.pos
+                            #size: self.size
+                            #radius: [10]
+
+                Button:
+                    text: "Save PIN"
+                    background_normal: ''
+                    background_color: 0.2, 0.6, 0.9, 1
+                    color: 1, 1, 1, 1
+                    bold: True
+                    on_release: root.change_pin()
+
+            # Refresh button
+            Button:
+                text: "Refresh List"
+                size_hint_y: None
+                height: 45
+                background_normal: ''
+                background_color: 1, 0.7, 0, 1
+                color: 1, 1, 1, 1
+                bold: True
+                on_release: root.refresh_list()
+
+            # Card list label
+            Label:
+                text: "Authorized Cards:"
+                font_size: 18
+                bold: True
+                color: 1, 1, 1, 1
+                size_hint_y: None
+                height: 30
+
+            # Scrollable card list
+            ScrollView:
+                size_hint_y: 0.6  # Limit it
+                do_scroll_x: False
+                do_scroll_y: True
+
+                GridLayout:
+                    id: card_list
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+
+            # Back button
+            Button:
+                text: "⬅ Back to Dashboard"
+                size_hint_y: None
+                height: 45
+                background_normal: ''
+                background_color: 0.3, 0.3, 0.3, 1
+                color: 1, 1, 1, 1
+                bold: True
+                on_release: root.back_to_dashboard()
