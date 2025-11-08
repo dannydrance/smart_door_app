@@ -60,6 +60,7 @@ class MqttHandler:
         elif topic == "door/events":
             Clock.schedule_once(lambda dt: dashboard.update_status(payload))
             Clock.schedule_once(lambda dt: manage.handle_event(payload))
+            Clock.schedule_once(lambda dt: dashboard.handle_event(payload))
 
             # Forward important messages to dashboard notifications
             important_keywords = [

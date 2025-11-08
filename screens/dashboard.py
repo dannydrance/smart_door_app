@@ -59,7 +59,7 @@ class DashboardScreen(Screen):
             app.toast(f"📤 Sent command: {cmd}")
             self.ids.notification_list.text = f"[b]Status:[/b] Sent {cmd}"
         else:
-            app.toast("🚫 Offline – cannot send command", color=(1,0.3,0.3,1))
+            app.toast("Offline – cannot send command", color=(1,0.3,0.3,1))
             self.ids.status.text = "[b]Status:[/b] Offline"
 
     def handle_event(self, event_msg: str):
@@ -70,26 +70,27 @@ class DashboardScreen(Screen):
             self.door_status = "Closed"
 
         # Update labels
-        self.ids.door_status_label.text = f"Door Status: {self.door_status}"
-        self.ids.door_status_label.color = self.STATUS_COLORS[self.door_status]
-        self.ids.status.text = f"[b]Event:[/b] {event_msg}"
+        # self.ids.door_status_label.text = f"Door Status: {self.door_status}"
+        # self.ids.door_status_label.color = self.STATUS_COLORS[self.door_status]
+        # self.ids.status.text = f"[b]Event:[/b] {event_msg}"
 
+        self.add_notification(event_msg)
         # Add notification
-        label = Label(
+        '''label = self.Label(
             text=event_msg,
             size_hint_y=None,
             height=30,
             color=self.STATUS_COLORS[self.door_status]
         )
         self.ids.notification_list.add_widget(label)
-        self.ids.notification_list.parent.scroll_y = 0
+        self.ids.notification_list.parent.scroll_y = 0'''
 
     def update_status(self, message):
         """
         Handles messages from door/status topic.
         """
         msg = message.strip()
-        print(f"[Dashboard] Status update: {msg}" + "XXXXX")
+        print(f"[Dashboard] Status update: {msg}")
 
         self.start_heartbeat_timer()
         
