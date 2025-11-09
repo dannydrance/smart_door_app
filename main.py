@@ -1,4 +1,3 @@
-# main.py
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 from kivy.lang import Builder
@@ -21,10 +20,29 @@ Builder.load_file("kv/manage.kv")
 class SmartDoorApp(App):
     def build(self):
         # ------------------ Database ------------------
-        self.db = Database()          # Initialize database
-        self.current_user = None      # Store logged-in username
+        self.db = Database()
+        self.current_user = None
 
-        # ------------------ MQTT ----------------------
+        # ------------------ Screen Manager ------------------
+        self.sm = ScreenManager()
+        self.sm.app = self
+
+        self.sm.add_widget(LoginScreen(name="login"))
+        self.sm.add_widget(DashboardScreen(name="dashboard"))
+        self.sm.add_widget(ManageScreen(name="manage"))
+
+        # ------------------ MQTT (init later) ------------------
+        self.mqtt = None
+
+        return self.sm
+
+    def on_start(self):
+        """Delay MQTT connect until UI + network are ready"""
+        Clock.schedule_once(self.start_mqtt, 2)  # wait 2 seconds before connecting
+        Clock.schedule_interval(self.check_connection, 1)
+
+    def start_mqtt(self, *args):
+        print("🔌 Initializing MQTT connection...")
         self.mqtt = MqttHandler(
             host="bffac683e63348f5b429862109209547.s1.eu.hivemq.cloud",
             port=8883,
@@ -33,28 +51,13 @@ class SmartDoorApp(App):
             app=self
         )
         self.mqtt.connect()
-        
-        Clock.schedule_interval(self.check_connection, 1)
-
-        # ------------------ Screen Manager ------------------
-        self.sm = ScreenManager()
-        self.sm.app = self
-
-        # Add screens
-        self.sm.add_widget(LoginScreen(name="login"))
-        self.sm.add_widget(DashboardScreen(name="dashboard"))
-        self.sm.add_widget(ManageScreen(name="manage"))
-
-        return self.sm
 
     # ------------------ User ------------------
     def set_user(self, username):
-        """Store logged-in username globally"""
         self.current_user = username
 
     # ------------------ Popup Messages ------------------
     def toast(self, message, color=(1, 1, 1, 1), duration=2):
-        """Temporary message popup"""
         view = ModalView(size_hint=(None, None), size=(300, 50), background_color=(0, 0, 0, 0.8))
         lbl = Label(text=message, color=color)
         view.add_widget(lbl)
@@ -63,7 +66,9 @@ class SmartDoorApp(App):
 
     # ------------------ Offline Banner ------------------
     def check_connection(self, dt):
-        """Show/hide offline banner depending on MQTT"""
+        if not self.mqtt:
+            return
+
         online = self.mqtt.is_online()
         current_screen = self.sm.current
 
@@ -77,12 +82,10 @@ class SmartDoorApp(App):
                     self.show_offline_banner()
 
     def show_offline_banner(self):
-        """Show a small banner at the top when offline"""
         self.offline_banner = ModalView(size_hint=(1, 0.1), background_color=(0, 0, 0, 0.7))
         self.offline_banner.add_widget(Label(text="⚠ OFFLINE – reconnecting...", color=(1, 0.8, 0, 1)))
         self.offline_banner.open()
 
-    # ------------------ Temporary Manage Popup ------------------
     def show_manage_popup(self):
         from kivy.uix.popup import Popup
         Popup(
