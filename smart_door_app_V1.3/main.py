@@ -32,11 +32,9 @@ Builder.load_file("kv/users.kv")
 def start_background_service():
     if platform == "android":
         from android import AndroidService
-        service = AndroidService(
-            "Smart Door Background Service",
-            "Listening for Door Alerts..."
-        )
-        service.start()
+        PythonService = autoclass('org.kivy.android.PythonService')
+        # "mqtt_service" must match your service name in buildozer.spec
+        PythonService.start('mqtt_service')
 
 
 class SmartDoorApp(App):
