@@ -1,0 +1,128 @@
+#:import dp kivy.metrics.dp
+#:import sp kivy.metrics.sp
+
+<UsersScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: 0.12, 0.15, 0.2, 1
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # ============ HEADER BAR ============
+        BoxLayout:
+            size_hint_y: None
+            height: dp(60)
+            padding: [dp(15), dp(10)]
+            spacing: dp(10)
+            canvas.before:
+                Color:
+                    rgba: 0.18, 0.22, 0.28, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Label:
+                text: "User Management"
+                font_size: sp(20)
+                bold: True
+                color: 1, 1, 1, 1
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+            Widget:
+
+            Button:
+                text: "⬅ Back"
+                font_size: sp(14)
+                size_hint_x: None
+                width: dp(100)
+                background_normal: ''
+                background_color: 0.3, 0.3, 0.3, 1
+                color: 1, 1, 1, 1
+                bold: True
+                on_release: root.back_to_dashboard()
+
+        # ============ MAIN CONTENT ============
+        BoxLayout:
+            orientation: 'vertical'
+            padding: [dp(15), dp(10)]
+            spacing: dp(12)
+
+            # Feedback label
+            Label:
+                id: feedback
+                text: ""
+                font_size: sp(14)
+                color: 0.8, 0.8, 1, 1
+                size_hint_y: None
+                height: dp(30)
+                text_size: self.size
+                halign: "left"
+                valign: "middle"
+
+            # Action buttons
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+
+                Button:
+                    text: "➕ Register New User"
+                    background_normal: ''
+                    background_color: 0.2, 0.7, 0.4, 1
+                    color: 1, 1, 1, 1
+                    font_size: sp(14)
+                    bold: True
+                    on_release: root.show_register_dialog()
+
+                Button:
+                    text: "🔄 Refresh"
+                    size_hint_x: 0.35
+                    background_normal: ''
+                    background_color: 1, 0.7, 0, 1
+                    color: 1, 1, 1, 1
+                    font_size: sp(14)
+                    bold: True
+                    on_release: root.refresh_users()
+
+            # Clear all button
+            Button:
+                text: "🗑️ Clear All Users"
+                size_hint_y: None
+                height: dp(45)
+                background_normal: ''
+                background_color: 0.7, 0.2, 0.2, 1
+                color: 1, 1, 1, 1
+                font_size: sp(13)
+                bold: True
+                on_release: root.clear_all_users()
+
+            # Section title
+            Label:
+                text: "Registered Users:"
+                font_size: sp(16)
+                bold: True
+                color: 1, 1, 1, 1
+                size_hint_y: None
+                height: dp(30)
+                halign: "left"
+                valign: "middle"
+                text_size: self.size
+
+            # User list
+            ScrollView:
+                do_scroll_x: False
+                do_scroll_y: True
+                bar_width: dp(8)
+
+                GridLayout:
+                    id: user_list
+                    cols: 1
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(10)
+                    padding: [0, dp(5)]
