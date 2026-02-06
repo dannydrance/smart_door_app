@@ -2,15 +2,27 @@ import time
 import paho.mqtt.client as mqtt
 from jnius import autoclass
 
-# ---- MODIFY THIS ----
 BROKER = "broker.hivemq.com"
 TOPIC = "esp32/notification"
-# ----------------------
 
 PythonService = autoclass('org.kivy.android.PythonService')
 Context = autoclass('android.content.Context')
 NotificationBuilder = autoclass('android.app.Notification$Builder')
 NotificationManager = autoclass('android.app.NotificationManager')
+NotificationChannel = autoclass('android.app.NotificationChannel')
+BuildVersion = autoclass('android.os.Build$VERSION')
+BuildVersionCodes = autoclass('android.os.Build$VERSION_CODES')
+
+
+def create_channel(service):
+    if BuildVersion.SDK_INT >= BuildVersionCodes.O:
+        channel = NotificationChannel(
+            "smartdoor",
+            "Smart Door Alerts",
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        nm = service.getSystemService(Context.NOTIFICATION_SERVICE)
+        nm.createNotificationChannel(channel)
 
 
 def on_connect(client, userdata, flags, rc):
@@ -20,20 +32,18 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     message = msg.payload.decode()
     service = PythonService.mService
-    nm = service.getSystemService(Context.NOTIFICATION_SERVICE)
-    builder = NotificationBuilder(service)
-    builder.setContentTitle("Smart Door Alert")
-    builder.setContentText(message)
-    
-    # Optional: change icon or color based on type
-    if "ALERT" in message:
-        # builder.setSmallIcon(alert_icon)
-        pass
-    elif "PIN updated" in message or "Sent" in message:
-        # builder.setSmallIcon(command_icon)
-        pass
 
-    nm.notify(1, builder.build())
+    create_channel(service)
+
+    nm = service.getSystemService(Context.NOTIFICATION_SERVICE)
+
+    builder = NotificationBuilder(service, "smartdoor")
+    builder.setContentTitle("🚪 Smart Door Alert")
+    builder.setContentText(message)
+    builder.setSmallIcon(service.getApplicationInfo().icon)
+    builder.setAutoCancel(True)
+
+    nm.notify(int(time.time()), builder.build())
 
 
 def main():
